@@ -1,0 +1,20 @@
+SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability
+SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability
+Keystore.118.nonAdmin Keystore.Encrypted
+Keystore.92.Admin Keystore.Encrypted
+AccessControl.75.RTU Login.PasswordPolicyEnforcement
+AccessControl.75.RTU Login.Enabled
+AccessControl.75.RTU Login.NoDefaultPasswords
+AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords
+Service.74.RTU Control.Patched
+Service.112.net logon.Patched
+Service.54.SCADA Service.Patched
+Host.73.RTU.Hardened
+Firewall.19.Firewall.KnownRuleSet
+UnknownService.81.unknownService(RTU-Process).Patched
+
+
+Service.74.RTU Control.Patched',
+ 'AccessControl.75.RTU Login.PasswordPolicyEnforcement',
+ 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 
+'AccessControl.75.RTU Login.NoDefaultPasswords']
