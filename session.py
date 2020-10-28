@@ -20,7 +20,10 @@ class Session:
         self.path_project_models = "api/v1/models"
         self.path_project_models_json = "api/v1/model/json"
         self.path_project_models_files = "api/v1/model/file"
-        self.path_project_scenarios = "api/v1/scenario"
+        # the next one is for running simulations
+        self.path_project_scenario = "api/v1/scenario"
+        # the next one is for deleting scenarios
+        self.path_project_scenarios = "api/v1/scenarios"
         self.path_project_simulations = "api/v1/simulations"
         self.path_simulation_results = "api/v1/simulation/data"
         self.path_simulation_attack_path = "api/v1/simulation/attackpath"
@@ -48,6 +51,15 @@ class Session:
             headers={'Content-Type': 'application/json'},
             verify=self.check_cert
         )
+        if response.status_code != 200:
+            response = requests.post(
+            self.base_url + self.path_login,
+            data='{"username":"' + self.user.name +
+                 '","password":"' + self.user.password + '"}',
+            headers={'Content-Type': 'application/json'},
+            verify=self.check_cert
+            )
+        #print(response, response.status_code)
         return (response.status_code, response.json()['response']['access_token'])
 
 
@@ -72,6 +84,48 @@ class Session:
         return
 
 
+    def get_scenarios_tids(self, project_id, time_limit = 30):
+        tic = time.time()
+        time_passed = -1
+        while time_passed < time_limit:
+            time.sleep(5)
+            response = requests.post(
+                self.base_url + self.path_project_scenarios,
+                headers={'Content-Type': 'application/json', 'Content-Length': '0',
+                         'Authorization': 'JWT ' + self.jwt_token},
+                data='{"pid":"' + project_id + '"}',
+                verify=self.check_cert
+            )
+            #print(response.status_code)
+            if response.status_code == 200:
+                scenarios = response.json()
+                tids = [scenarios['response'][item]['tid'] for item in scenarios['response']]
+                return tids
+            time_passed = time.time() - tic
+        return
+
+
+    def get_models_mids(self, project_id, time_limit = 30):
+        tic = time.time()
+        time_passed = -1
+        while time_passed < time_limit:
+            time.sleep(5)
+            response = requests.post(
+                self.base_url + self.path_project_models,
+                headers={'Content-Type': 'application/json', 'Content-Length': '0',
+                         'Authorization': 'JWT ' + self.jwt_token},
+                data='{"pid":"' + project_id + '"}',
+                verify=self.check_cert
+            )
+            #print(response.status_code)
+            if response.status_code == 200:
+                resp = response.json()
+                mids = [item['mid'] for item in resp['response']]
+                return mids
+            time_passed = time.time() - tic
+        return
+
+
     def delete_model_from_project(self, model_id, project_id):
         response = requests.delete(
             self.base_url + self.path_project_models,
@@ -89,7 +143,7 @@ class Session:
         return
 
 
-    def delete_scenario_from_project(self, scenario_id, project_id):
+    def delete_scenario_from_project(self, scenario_id, project_id, time_limit = 30):
         response = requests.delete(
             self.base_url + self.path_project_scenarios,
             headers={
@@ -103,6 +157,7 @@ class Session:
                 scenario_id, project_id))
         else:
             print('Failed to delete the scenario.')
+            print(response)
         return
 
 
@@ -112,7 +167,7 @@ class Session:
             headers={
                 'Content-Type': 'application/json',
                 'Authorization': 'JWT ' + self.jwt_token},
-            data='{"pid":"' + project_id + '","simds":["' + simulation_id + '"]}',
+            data='{"pid":"' + project_id + '","simids":["' + simulation_id + '"]}',
             verify=self.check_cert
         )
         if response.status_code == 200:
@@ -174,7 +229,7 @@ class Session:
         return
 
 
-    def upload_model_to_project(self, model_file_path, project_id):
+    def upload_model_to_project(self, model_file_path, project_id, time_limit = 300):
         '''
         Uploads a model stored in a .sCAD file under the specified path to the project of the specified project id.
 
@@ -189,15 +244,21 @@ class Session:
         data = '{"pid":"' + project_id + \
             '","files":[[{"file":"' + file + '","filename":"' + \
             file_name + '","type":"sCAD","tags":[]}]]}'
-        response = requests.put(
-            self.base_url + self.path_project_models,
-            headers={
-                'Content-Type': 'application/json',
-                'Authorization': 'JWT ' + self.jwt_token},
-            data=data,
-            verify=self.check_cert
-        )
-        if response.status_code == 200:
+        status_code = -1
+        start = time.time()
+        time_passed = -1
+        while status_code != 200 and time_passed < time_limit:
+            time.sleep(5)
+            response = requests.put(
+                self.base_url + self.path_project_models,
+                headers={
+                    'Content-Type': 'application/json',
+                    'Authorization': 'JWT ' + self.jwt_token},
+                data=data,
+                verify=self.check_cert
+            )
+            status_code = response.status_code
+        if status_code == 200:
             mid = response.json()['response'][0]["mid"]
             print('Uploaded model {} to the project having pid = {}. The model id is {}.'.format(
                 model_file_path, project_id, mid))
@@ -207,23 +268,25 @@ class Session:
         return
 
 
-    def run_simulation(self, project_id, model_id, name='', description='', time_limit=30):
+    def run_simulation(self, project_id, model_id, name='scenario', description='', time_limit=30):
         '''
         Run simulation on the specified model.
 
-        If successful, return simulation id (string). This can be later used for querring for simulation results.
+        If successful, return a tuple (simulation id (string), scenario id (string)). The former can be later used for querring for simulation results.
+        The latter, for deleting scenarios.
+
         Else, return None.
         '''
         data = '{"description":"' + description + '","mid":"' + model_id + \
             '","name":"' + name + '","pid":"' + project_id + '"}'
-        # sometimes fails to run a simulation even if all the data is correct. so:
+
         status_code = -1
         start = time.time()
         time_passed = -1
-        while status_code != 200 and time_passed < time_limit:
+        while time_passed < time_limit:
             time.sleep(5)
             response = requests.put(
-                self.base_url + self.path_project_scenarios,
+                self.base_url + self.path_project_scenario,
                 headers={
                     'Content-Type': 'application/json',
                     'Authorization': 'JWT ' + self.jwt_token},
@@ -232,11 +295,15 @@ class Session:
             )
             status_code = response.status_code
             time_passed = time.time() - start
-        if status_code == 200:
-            simid = response.json()['response']['calculation']['simid']
-            print("Simulation performed.")
-            return simid
-        else:
+            if status_code == 200 and 'response' in response.json() and 'calculation' in response.json()['response']:
+                # printing for debugging
+                #print('AAAAAAAA')
+                #print(response.json())
+                simid = response.json()['response']['calculation']['simid']
+                tid = response.json()['response']['tid']
+                print("Simulation performed.")
+                return (simid, tid)
+        if status_code != 200:
             print("Failed to run a simulation. Response status code is {}.".format(response.status_code))
             return
 

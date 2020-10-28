@@ -4,7 +4,7 @@ class User:
     '''
 
     def __init__(self, name, password, organization=None, role=None):
-        if role in ['user', 'admin', 'project creator']:
+        if role in ['user', 'system admin', 'admin', 'project creator']:
             self.role = role
         else:
             print("Role of the user is expected to be one of 'user', 'admin' and 'project creator'.")

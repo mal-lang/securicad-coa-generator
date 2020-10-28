@@ -79,66 +79,149 @@ class AttackGraph(nx.DiGraph):
                 self.nodes[gnode]["ttc"] = node["ttc"]
 
 
-    def set_criticallity_scores(self, scores="fod"):
-        '''
-        Compute criticallity scores of counterable attack steps with respect to the metric provided.
-        For each of the defense steps, assign to it the maximum criticallity over the attack steps it counters.
-        Score stored in self.nodes[node]['scores'].
+    # def set_criticallity_scores(self, scores="fod"):
+    #     '''
+    #     Compute criticallity scores of counterable attack steps with respect to the metric provided.
+    #     For each of the defense steps, assign to it the maximum criticality over the attack steps it counters.
+    #     Score stored in self.nodes[node]['scores'].
+    #
+    #     scores = non-empty string of length <= 3, consisting of letters 'f', 'o' and 'd'.
+    #     f = frequency, o = weighted outdegree, d = distance (will compute the inverse of distance, so that small distance
+    #     results in high criticallity).
+    #
+    #     The order of letters in 'scores' encodes the importance ordering of the criticallity metrics.
+    #     '''
+    #     n = len(scores)
+    #     assert n <= 3
+    #     assert n > 0
+    #     if "d" in scores:
+    #         entryPoints = [node for node in self.nodes if self.nodes[node]["label"] == "Attacker.EntryPoint"]
+    #     for node in self.nodes:
+    #         if self.nodes[node]["isDefense"]:
+    #             # compute parameters for each of the children, sort the children, assign the score of the most critical one to the defense
+    #             children_scores = {child: [0 for i in range(len(scores))]
+    #                                for child in self.successors(node)}
+    #             if "f" in scores:
+    #                 for child in self.successors(node):
+    #                     children_scores[child][scores.index("f")] = self.nodes[child]["frequency"]
+    #             if "o" in scores:
+    #                 for child in self.successors(node):
+    #                     children_scores[child][scores.index("o")] = sum(
+    #                         [self.nodes[grandchild]["frequency"] for grandchild in self.successors(child)])
+    #             if "d" in scores:
+    #                 for child in self.successors(node):
+    #                     try:
+    #                         child_rec_distance = round(1 / min([nx.shortest_path_length(
+    #                             self, source=entrypoint, target=child) for entrypoint in entryPoints]), 3)
+    #                     except:
+    #                         child_rec_distance = 0
+    #                     children_scores[child][scores.index("d")] = child_rec_distance
+    #             # get the score of the highest scored child
+    #             self.nodes[node]['scores'] = get_highest_scoring(children_scores, len(scores))
+    #     return
 
-        scores = non-empty string of length <= 3, consisting of letters 'f', 'o' and 'd'.
-        f = frequency, o = weighted outdegree, d = distance (will compute the inverse of distance, so that small distance
-        results in high criticallity).
+    def set_criticality_scores_of_counterable_attack_steps(self, metrics = 'fo', only_counterable = True):
+        counterable_attack_steps = []
+        if only_counterable:
+            for node in self.nodes:
+                if self.nodes[node]["isDefense"]:
+                    for child in self.successors(node):
+                        if child not in counterable_attack_steps:
+                            counterable_attack_steps.append(child)
+        else:
+            counterable_attack_steps = [node for node in self.nodes if not self.nodes[node]["isDefense"]]
 
-        The order of letters in 'scores' encodes the importance ordering of the criticallity metrics.
-        '''
-        n = len(scores)
-        assert n <= 3
-        assert n > 0
-        if "d" in scores:
-            entryPoints = [node for node in self.nodes if self.nodes[node]["label"] == "Attacker.EntryPoint"]
-        for node in self.nodes:
-            if self.nodes[node]["isDefense"]:
-                # compute parameters for each of the children, sort the children, assign the score of the most critical one to the defense
-                children_scores = {child: [0 for i in range(len(scores))]
-                                   for child in self.successors(node)}
-                if "f" in scores:
-                    for child in self.successors(node):
-                        children_scores[child][scores.index("f")] = self.nodes[child]["frequency"]
-                if "o" in scores:
-                    for child in self.successors(node):
-                        children_scores[child][scores.index("o")] = sum(
-                            [self.nodes[grandchild]["frequency"] for grandchild in self.successors(child)])
-                if "d" in scores:
-                    for child in self.successors(node):
-                        try:
-                            child_rec_distance = round(1 / min([nx.shortest_path_length(
-                                self, source=entrypoint, target=child) for entrypoint in entryPoints]), 3)
-                        except:
-                            child_rec_distance = 0
-                        children_scores[child][scores.index("d")] = child_rec_distance
-                # get the score of the highest scored child
-                self.nodes[node]['scores'] = get_highest_scoring(children_scores, len(scores))
+        if metrics == 'f':
+            metrics_for_nodes = {node: [self.nodes[node]["frequency"]] for node in counterable_attack_steps}
+        else:
+            weighted_out_degrees = {node: [sum([self.nodes[child]["frequency"] for child in self.successors(node)])] for node in counterable_attack_steps}
+            if metrics == 'o':
+                metrics_for_nodes = weighted_out_degrees
+            elif metrics == 'fo':
+                metrics_for_nodes = {node: [self.nodes[node]["frequency"], weighted_out_degrees[node][0]] for node in counterable_attack_steps}
+            else: #metrics = 'of'
+                metrics_for_nodes = {node: [weighted_out_degrees[node][0], self.nodes[node]["frequency"]] for node in counterable_attack_steps}
+
+        # sort from the node with the highest metric to the one with the lowest.
+        # nodes_sorted will be a list with the first element being the node with highest metric, etc.
+        if len(metrics) == 1:
+            nodes_sorted = sorted(metrics_for_nodes, key=lambda key: (metrics_for_nodes[key][0]), reverse=True)
+        else: #len(metrics) = 2:
+            nodes_sorted = sorted(metrics_for_nodes, key=lambda key: (metrics_for_nodes[key][0], metrics_for_nodes[key][1]), reverse=True)
+
+        # assign scores
+        current_score = len(counterable_attack_steps)
+        metric_of_previous_node = None
+        for node in nodes_sorted:
+            if metric_of_previous_node is None:
+                # this is the first iteration, and score is being assigned to the most critical attack step
+                self.nodes[node]["crit_score"] = current_score
+            else:
+                if metrics_for_nodes[node] == metric_of_previous_node:
+                    # the metric of this node is the same as the previous one, so it will get the same criticality score
+                    self.nodes[node]["crit_score"] = current_score
+                else:
+                    self.nodes[node]["crit_score"] = current_score - 1
+                    current_score -= 1
+            metric_of_previous_node = metrics_for_nodes[node]
         return
 
 
-    def def_nodes_sorted_by_scores(self, scores="fod"):
+    def get_quality_scores_of_defense_step(self, all_prerequisites_for_w, q = 3):
         '''
-        return dictionary of defense nodes sorted wrt their scores, {def_node: def_node_score}
+        before this function is run, the function set_criticality_scores_of_counterable_attack_steps
+        has to called. enough if counterable attack steps are assigned criticality scores. good coding.
         '''
-        self.set_criticallity_scores(scores=scores)
-        n = len(scores)
-        result = {node: self.nodes[node]["scores"]
-                  for node in self.nodes if self.nodes[node]["isDefense"]}
-        if n == 3:
-            result = sorted(result, key=lambda key: (
-                result[key][0], result[key][1], result[key][2]), reverse=True)
-        elif n == 2:
-            result = sorted(result, key=lambda key: (
-                result[key][0], result[key][1]), reverse=True)
-        else:
-            result = sorted(result, key=lambda key: (
-                result[key][0]), reverse=True)
-        return result
+        # set of attack steps countered by w and all of its prerequisites
+        # print('all_prerequisites_for_w:')
+        # print(all_prerequisites_for_w)
+        # print("that's it")
+        # print('its successors')
+        # for node in all_prerequisites_for_w:
+        #     for child in self.successors(node):
+        #         print(child)
+        # print('-----')
+        assert all_prerequisites_for_w != set()
+        Counter_w = set()
+        for node in all_prerequisites_for_w:
+            if node in self.nodes:
+                countered_by_the_node = set([child for child in self.successors(node)])
+                Counter_w = Counter_w.union(countered_by_the_node)
+        # all_prerequisites_for_w should contain at least w.
+        # so Counter_w should contain at least one attack step, and that step is a child of w.
+        assert Counter_w != set()
+        if q == 1:
+            return len(Counter_w)
+        elif q == 2:
+            return sum([self.nodes[node]["crit_score"] for node in Counter_w])
+        else: #q=3
+            return max([self.nodes[node]["crit_score"] for node in Counter_w])
+
+
+    # def def_nodes_sorted_by_scores(self, scores="fod"):
+    #     '''
+    #     return list of defense nodes sorted wrt their scores
+    #     '''
+    #     self.set_criticallity_scores(scores=scores)
+    #     n = len(scores)
+    #     result = {node: self.nodes[node]["scores"]
+    #               for node in self.nodes if self.nodes[node]["isDefense"]}
+    #     if result == {}:
+    #         return []
+    #
+    #     # ffs
+    #     print(result)
+    #
+    #     if n == 3:
+    #         result = sorted(result, key=lambda key: (
+    #             result[key][0], result[key][1], result[key][2]), reverse=True)
+    #     elif n == 2:
+    #         result = sorted(result, key=lambda key: (
+    #             result[key][0], result[key][1]), reverse=True)
+    #     else:
+    #         result = sorted(result, key=lambda key: (
+    #             result[key][0]), reverse=True)
+    #     return list(result)
 
 
     def prettyprint(self, ttc=False):
@@ -187,26 +270,26 @@ def merge_attack_graphs(graphs):
     return res
 
 
-def get_highest_scoring(d, n):
-    '''
-    In: dictionary d with values being vectors of n non-negative integer numbers, e.g.
-        d = {x: [10, 2, 0],
-             y: [0, 16, 0],
-             z: [10, 5, 3]}
-    Out: the value optimal in the reversed lexographical ordering sense.
-    Example: the above d when ordered:
-        d = {z: [10, 5, 3],
-             x: [10, 2, 0],
-             y: [0, 16, 0]},
-    so the returned object will be the list [10, 5, 3].
-    '''
-    currently_the_best = {key: d[key] for key in d}
-    for i in range(n):
-        if len(currently_the_best) == 1:
-            break
-        best_on_ith = max([d[key][i] for key in d])
-        currently_the_best = {
-            key: currently_the_best[key] for key in currently_the_best if currently_the_best[key][i] == best_on_ith}
-    # :)
-    for item in currently_the_best.values():
-        return item
+# def get_highest_scoring(d, n):
+#     '''
+#     In: dictionary d with values being vectors of n non-negative integer numbers, e.g.
+#         d = {x: [10, 2, 0],
+#              y: [0, 16, 0],
+#              z: [10, 5, 3]}
+#     Out: the value optimal in the reversed lexographical ordering sense.
+#     Example: the above d when ordered:
+#         d = {z: [10, 5, 3],
+#              x: [10, 2, 0],
+#              y: [0, 16, 0]},
+#     so the returned object will be the list [10, 5, 3].
+#     '''
+#     currently_the_best = {key: d[key] for key in d}
+#     for i in range(n):
+#         if len(currently_the_best) == 1:
+#             break
+#         best_on_ith = max([d[key][i] for key in d])
+#         currently_the_best = {
+#             key: currently_the_best[key] for key in currently_the_best if currently_the_best[key][i] == best_on_ith}
+#     # :)
+#     for item in currently_the_best.values():
+#         return item
