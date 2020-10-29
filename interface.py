@@ -9,7 +9,7 @@ suppress = True
 if suppress and not sys.warnoptions:
     warnings.simplefilter("ignore")
 
-def main(argv):
+def main(argument):
     '''
     usage: in the command line, type
         python interface.py <inputfile>
@@ -27,7 +27,10 @@ def main(argv):
 
     see 'interface_example_input.txt' for an example. this if of course far from the final version.
     '''
-    with open(argv[0], 'r') as f:
+    if type(argument) == type([]):
+        input_path = argv[0]
+    input_path = argument
+    with open(input_path, 'r') as f:
         inputs = [line.strip() for line in f.readlines()]
         ip_addres = inputs[0]
         username = inputs[1]
@@ -53,4 +56,5 @@ def main(argv):
     return
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    #main(sys.argv[1:])
+    main('interface_example_input.txt')
