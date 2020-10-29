@@ -36,7 +36,7 @@ def testUkraineModel():
 
     metric1 = 'o' # criticality metric used is the weighted outdegree
     metric2 = 'f' # criticality metric used is the frequency
-    iters = 2 # 5 iterations
+    iters = 2 # 2 iterations
     defs_per_iter = 3 # at least 3 defenses added per iteration (if possible)
 
     # 2. generation
