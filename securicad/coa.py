@@ -44,7 +44,7 @@ class CoA():
         '''
         # if there are no precedence constraints (= no edges in the Hasse diagram of the CoA), then we preserve the importance order
         if list(self.hasse.edges) == []:
-            return self.hasse.nodes
+            return list(self.hasse.nodes)
         # if there are any, then we are done for :( got to maintain the precedence requirements. ROOM FOR IMPROVEMENT.
         return list(nx.topological_sort(self.hasse))
 
