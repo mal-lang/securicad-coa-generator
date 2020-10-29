@@ -1,0 +1,24 @@
+f
+102.Compromise: 10.0, 58.0
+271.Compromise: 6.0, 34.0
+277.Compromise: 14.0, 48.0
+2.697
+1848.0708932876587
+iterations: 5
+
+o
+102.Compromise: 19.0, 1.7976931348623157e+308
+271.Compromise: 10.0, 64.0
+277.Compromise: 16.0, 76.0
+40.83
+2301.5886771678925
+iterations: 5
+
+fo
+102.Compromise: 13.0, 61.0
+271.Compromise: 10.0, 45.0
+277.Compromise: 19.0, 57.0
+13.775
+2039.0462124347687
+iterations: 5
+
