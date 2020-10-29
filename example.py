@@ -1,13 +1,13 @@
 from securicad.session import Session
 from securicad.user import User
-from securicad.coagen import CoAGenerator, overline_pre, efficiency
-from securicad.model import Model
-from securicad.attackg import AttackGraph, merge_attack_graphs
+from securicad.coagen import CoAGenerator
 import sys
 import warnings
-import time
-import numpy as np
-import networkx as nx
+
+# suppressing HTTPS insecure connection warnings
+suppress = True
+if suppress and not sys.warnoptions:
+    warnings.simplefilter("ignore")
 
 
 def testUkraineModel():
@@ -34,8 +34,9 @@ def testUkraineModel():
     prerequisites_path = 'paper_tests_ukraine\\ukraine_pre.json'
     exclusivity_path = 'paper_tests_ukraine\\ukraine_excl.json'
 
-    metric = 'o' # criticality metric used is the weighted outdegree
-    iters = 5 # 5 iterations
+    metric1 = 'o' # criticality metric used is the weighted outdegree
+    metric2 = 'f' # criticality metric used is the frequency
+    iters = 2 # 5 iterations
     defs_per_iter = 3 # at least 3 defenses added per iteration (if possible)
 
     # 2. generation
@@ -43,12 +44,9 @@ def testUkraineModel():
     generator = CoAGenerator(TEST_SESSION, costs_path, times_path, monetary_budgets_path,
                                 time_budgets_path, prerequisites_path, exclusivity_path)
 
-
-    #criticality_metrics = ['f', 'o', 'of']
-
     result = generator.generate_coas(project_id=TEST_PROJECT_ID, model_id=model_id,
                                      target_objects_ids=target_objects_ids,
-                                     crit_metrics=[metric], iterations_number_limit=iters, defs_per_iteration=defs_per_iter)
+                                     crit_metrics=[metric1, metric2], iterations_number_limit=iters, defs_per_iteration=defs_per_iter)
 
     for item in result:
         print(item)
