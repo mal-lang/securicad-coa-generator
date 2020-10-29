@@ -1,0 +1,29 @@
+1550.4669351577759
+
+INITIAL TTC5, TTC50
+74.Compromise: 0, 0
+59.Compromise: 0, 0
+
+FINAL TTC5, TTC50
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 51.0, 1.7976931348623157e+308
+
+EFFICIENCY
+500.975
+
+COA
+'AccessControl.104.AD SSO Admin.Enabled',
+'Firewall.19.Firewall.Enabled',
+'Keystore.92.Admin Keystore.Encrypted',
+'AccessControl.117.AD SSO nonAdmin.Enabled',
+'Service.54.SCADA Service.Patched',
+'AccessControl.75.RTU Login.Enabled',
+'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability',
+'Service.74.RTU Control.Patched',
+'SoftwareProduct.78.Generic service software (GPL).NoPatchableVulnerability',
+'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords',
+'Host.73.RTU.HostFirewall',
+'Host.73.RTU.Hardened',
+'Firewall.19.Firewall.KnownRuleSet',
+'AccessControl.117.AD SSO nonAdmin.Backoff',
+'Service.96.AD DC.Patched'

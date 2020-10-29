@@ -1,0 +1,5 @@
+1570.4646880626678
+381.979
+74.Compromise: 61.0, 1.7976931348623157e+308
+59.Compromise: 21.0, 1.7976931348623157e+308
+['AccessControl.104.AD SSO Admin.Enabled', 'Firewall.19.Firewall.Enabled', 'Keystore.92.Admin Keystore.Encrypted', 'Service.54.SCADA Service.Patched', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'AccessControl.117.AD SSO nonAdmin.PasswordPolicyEnforcement', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'AccessControl.75.RTU Login.Enabled', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Host.73.RTU.HostFirewall', 'Host.73.RTU.Hardened', 'Service.74.RTU Control.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Service.96.AD DC.Patched']

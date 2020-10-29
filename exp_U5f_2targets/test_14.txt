@@ -1,0 +1,5 @@
+1844.6534638404846
+329.982
+74.Compromise: 22.0, 1.7976931348623157e+308
+59.Compromise: 8.0, 1.7976931348623157e+308
+['AccessControl.104.AD SSO Admin.Enabled', 'Firewall.19.Firewall.Enabled', 'Keystore.92.Admin Keystore.Encrypted', 'Service.54.SCADA Service.Patched', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'AccessControl.75.RTU Login.Enabled', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability']

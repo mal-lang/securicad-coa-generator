@@ -1,0 +1,9 @@
+1578.0477979183197
+957.529
+74.Compromise: 20.0, 1.7976931348623157e+308
+59.Compromise: 20.0, 1.7976931348623157e+308
+3.Compromise: 3.0, 1.7976931348623157e+308
+20.Compromise: 15.0, 1.7976931348623157e+308
+29.Compromise: 5.0, 1.7976931348623157e+308
+27.Compromise: 15.0, 1.7976931348623157e+308
+['Firewall.19.Firewall.Enabled', 'AccessControl.104.AD SSO Admin.Enabled', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'AccessControl.94.Windows Server login.Enabled', 'Service.96.AD DC.Patched', 'Keystore.118.nonAdmin Keystore.Encrypted', 'Firewall.19.Firewall.KnownRuleSet', 'AccessControl.117.AD SSO nonAdmin.Backoff', 'Host.20.Windows 7 workstation.ProperlyConfigured', 'Service.112.net logon.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords']

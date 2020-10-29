@@ -1,0 +1,7 @@
+1420.763385772705
+434.975
+74.Compromise: 58.0, 1.7976931348623157e+308
+59.Compromise: 33.0, 1.7976931348623157e+308
+3.Compromise: 0.0, 22.0
+20.Compromise: 0.0, 22.0
+['Firewall.19.Firewall.Enabled', 'AccessControl.104.AD SSO Admin.Enabled', 'Keystore.92.Admin Keystore.Encrypted', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'Service.54.SCADA Service.Patched', 'AccessControl.75.RTU Login.Enabled', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'Service.74.RTU Control.Patched', 'AccessControl.94.Windows Server login.Enabled', 'Service.96.AD DC.Patched', 'Service.112.net logon.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Client.27.VPN Client.Patched', 'Host.73.RTU.HostFirewall']
