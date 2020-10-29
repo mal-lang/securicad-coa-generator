@@ -129,9 +129,14 @@ class CoAGenerator():
                      stop_condition = None,
                      keep_track_of_ttcs=True,
                      iterations_number_limit = 15,
-                     defs_per_iteration = 1):
+                     defs_per_iteration = 1,
+                     test_for_paper = False):
         '''
         return list of pairs (coa, coa_efficiency)
+
+        ugly code, sorry for that, lots of quick fixes for extracting additional info for tests
+
+        also, keep_track_of_ttcs should ALWAYS be set to True
         '''
         result = []
         for i in range(len(crit_metrics)):
@@ -162,25 +167,37 @@ class CoAGenerator():
 
             # messy.
             # NEED keep_track_of_ttcs = True to be able to compute efficiency wrt the same initial TTC values.
-            # BUT never want to return ttcs; want list of pairs (coa, coa_efficiency) anyway
+            # BUT, unless something is being tested, don't want to return ttcs; want list of pairs (coa, coa_efficiency) anyway
 
-            # TODO modify the output
+            if test_for_paper:
+                # for compatibility with all the tests functions. to be removed from the final version.
+                if i == 0 and keep_track_of_ttcs:
+                    real_initial_ttcs = ithresult[1]
+                    result.append(ithresult[0])
+                elif keep_track_of_ttcs:
+                    # recompute the efficiency score of this coa, wrt to the common initial ttc values
+                    intermediate_ttcs = ithresult[0][2]
+                    coa_efficiency = efficiency(real_initial_ttcs, intermediate_ttcs)
+                    result.append((ithresult[0][0], coa_efficiency, ithresult[0][2]))
+                else:
+                    result.append(ithresult[0])
 
-
-            if i == 0 and keep_track_of_ttcs:
-                real_initial_ttcs = ithresult[1]
-                result.append(ithresult[0])
-            elif keep_track_of_ttcs:
-                # recompute the efficiency score of this coa, wrt to the common initial ttc values
-                intermediate_ttcs = ithresult[0][2]
-                coa_efficiency = efficiency(real_initial_ttcs, intermediate_ttcs)
-                # coa_efficiency = round(sum([efficiency_alpha * (intermediate_ttcs[x][0] - real_initial_ttcs[x][0]) +
-                #                         (1 - efficiency_alpha) * (intermediate_ttcs[x][1] - real_initial_ttcs[x][1]) for x in real_initial_ttcs]), 3)
-
-                result.append((ithresult[0][0], coa_efficiency, ithresult[0][2]))
             else:
-                result.append(ithresult[0])
-        if keep_track_of_ttcs:
+                # this branch is expected to be executed always in the non-test setting.
+                if i == 0 and keep_track_of_ttcs:
+                    # take the initial ttcs obtained in this run of generator, and use them for computing efficiency scores for all CoAs.
+                    real_initial_ttcs = ithresult[1]
+                    # no need to recompute efficiency of this CoA
+                    result.append((coa.aslist(), coa_efficiency))
+                elif keep_track_of_ttcs:
+                    # recompute the efficiency score of this coa, wrt to the common initial ttc values
+                    intermediate_ttcs = ithresult[0][2]
+                    coa_efficiency = efficiency(real_initial_ttcs, intermediate_ttcs)
+                    result.append((coa.aslist(), coa_efficiency))
+                else:
+                    result.append(coa.aslist())
+
+        if test_for_paper:
             return (result, real_initial_ttcs, ithresult[2])
 
         return result
@@ -199,7 +216,7 @@ class CoAGenerator():
                                              iterations_number_limit = 15,
                                              defs_per_iteration = 1):
         '''
-        TODO
+        Essentially, the algorithm described in our paper + communication with securiCAD.
         '''
         # 1. PREPROCESSING
         # 1.1 download and unzip initial model, remember its path, create corresponding Model object

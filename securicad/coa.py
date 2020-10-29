@@ -38,7 +38,14 @@ class CoA():
         Out: list of strings (list of defense steps)
 
         Turn partially order set into a list respecting precedence relation.
+
+        Tricky! Might mess up the 'importance' order of the steps (defense added earlier to the CoA is more important
+        then the ones added later).
         '''
+        # if there are no precedence constraints (= no edges in the Hasse diagram of the CoA), then we preserve the importance order
+        if list(self.hasse.edges) == []:
+            return self.hasse.nodes
+        # if there are any, then we are done for :( got to maintain the precedence requirements. ROOM FOR IMPROVEMENT.
         return list(nx.topological_sort(self.hasse))
 
 
