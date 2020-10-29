@@ -4,7 +4,6 @@ from securicad.session import *
 from securicad.attackg import *
 from securicad.coa import *
 from securicad.coagen import *
-from securicad.interface import *
 
 name = "securicad"
 
