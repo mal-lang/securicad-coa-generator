@@ -1,0 +1,27 @@
+f
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 74.0, 1.7976931348623157e+308
+3.Compromise: 7.0, 1.7976931348623157e+308
+485.78
+['Keystore.92.Admin Keystore.Encrypted', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Host.93.AD server.ProperlyConfigured', 'Service.54.SCADA Service.Patched', 'Service.112.net logon.Patched', 'AccessControl.75.RTU Login.Enabled', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'Service.96.AD DC.Patched', 'Host.93.AD server.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Host.73.RTU.HostFirewall', 'Host.73.RTU.Hardened']
+1543.3488442897797
+iterations: 5
+
+o
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 71.0, 1.7976931348623157e+308
+3.Compromise: 15.0, 1.7976931348623157e+308
+490.78
+['AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Keystore.118.nonAdmin Keystore.Encrypted', 'AccessControl.75.RTU Login.Enabled', 'Service.112.net logon.Patched', 'Host.73.RTU.HostFirewall', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'Service.54.SCADA Service.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Host.73.RTU.Hardened', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'Service.96.AD DC.Patched', 'Host.93.AD server.ProperlyConfigured', 'AccessControl.75.RTU Login.NoDefaultPasswords', 'AccessControl.75.RTU Login.PasswordPolicyEnforcement']
+1634.7025961875916
+iterations: 5
+
+fo
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+3.Compromise: 22.0, 1.7976931348623157e+308
+576.777
+['Host.93.AD server.ProperlyConfigured', 'Keystore.92.Admin Keystore.Encrypted', 'Service.96.AD DC.Patched', 'Service.54.SCADA Service.Patched', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'AccessControl.75.RTU Login.Enabled', 'Service.112.net logon.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'Host.93.AD server.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'SoftwareProduct.100.Windows Server.NoPatchableVulnerability']
+1634.5470237731934
+iterations: 5
+

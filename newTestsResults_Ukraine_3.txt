@@ -1,0 +1,27 @@
+f
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+3.Compromise: 14.0, 1.7976931348623157e+308
+568.777
+['Keystore.92.Admin Keystore.Encrypted', 'Service.112.net logon.Patched', 'AccessControl.75.RTU Login.Enabled', 'Service.54.SCADA Service.Patched', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Service.96.AD DC.Patched', 'Host.93.AD server.ProperlyConfigured', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'Firewall.19.Firewall.KnownRuleSet', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'Host.73.RTU.HostFirewall', 'Host.93.AD server.Patched', 'SoftwareProduct.100.Windows Server.NoPatchableVulnerability', 'SoftwareProduct.99.Generic service software (COTS).NoUnpatchableVulnerability']
+1622.1311058998108
+iterations: 5
+
+o
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+3.Compromise: 17.0, 1.7976931348623157e+308
+571.777
+['AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Keystore.118.nonAdmin Keystore.Encrypted', 'Host.93.AD server.ProperlyConfigured', 'Service.112.net logon.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'Firewall.19.Firewall.KnownRuleSet', 'Service.54.SCADA Service.Patched', 'AccessControl.75.RTU Login.Enabled', 'UnknownAccessControl.83.UnknownAccessControl.Enabled', 'Host.73.RTU.Hardened', 'Host.93.AD server.Patched', 'Service.96.AD DC.Patched', 'Service.74.RTU Control.Patched', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability']
+1839.6809105873108
+iterations: 5
+
+fo
+74.Compromise: 99.0, 1.7976931348623157e+308
+59.Compromise: 93.0, 1.7976931348623157e+308
+3.Compromise: 26.0, 1.7976931348623157e+308
+472.78
+['Keystore.92.Admin Keystore.Encrypted', 'Service.112.net logon.Patched', 'Host.93.AD server.ProperlyConfigured', 'Service.54.SCADA Service.Patched', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'AccessControl.75.RTU Login.Enabled', 'Service.96.AD DC.Patched', 'Host.93.AD server.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'UserAccount.95.Admin account.MFA', 'SoftwareProduct.99.Generic service software (COTS).NoUnpatchableVulnerability', 'AccessControl.117.AD SSO nonAdmin.PasswordPolicyEnforcement']
+1567.8545577526093
+iterations: 5
+

@@ -1,0 +1,27 @@
+f
+74.Compromise: 75.0, 1.7976931348623157e+308
+59.Compromise: 58.0, 1.7976931348623157e+308
+3.Compromise: 0.0, 31.0
+268.79
+['Keystore.92.Admin Keystore.Encrypted', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'AccessControl.75.RTU Login.Enabled', 'Service.54.SCADA Service.Patched', 'Service.96.AD DC.Patched', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'Service.112.net logon.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability']
+1477.4187269210815
+iterations: 5
+
+o
+74.Compromise: 69.0, 1.7976931348623157e+308
+59.Compromise: 44.0, 1.7976931348623157e+308
+3.Compromise: 18.0, 1.7976931348623157e+308
+385.784
+['AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Keystore.118.nonAdmin Keystore.Encrypted', 'Host.93.AD server.ProperlyConfigured', 'Service.112.net logon.Patched', 'AccessControl.75.RTU Login.Enabled', 'Service.54.SCADA Service.Patched', 'UnknownAccessControl.83.UnknownAccessControl.Enabled', 'Host.73.RTU.HostFirewall', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'Firewall.19.Firewall.KnownRuleSet', 'Service.96.AD DC.Patched', 'Host.93.AD server.Patched']
+1538.3994708061218
+iterations: 5
+
+fo
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 83.0, 1.7976931348623157e+308
+3.Compromise: 20.0, 1.7976931348623157e+308
+507.779
+['Host.93.AD server.ProperlyConfigured', 'Service.96.AD DC.Patched', 'Keystore.118.nonAdmin Keystore.Encrypted', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'AccessControl.75.RTU Login.Enabled', 'Service.54.SCADA Service.Patched', 'Service.112.net logon.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'Host.93.AD server.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Host.73.RTU.Hardened', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability']
+1345.3838684558868
+iterations: 5
+

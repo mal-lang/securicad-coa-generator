@@ -1,0 +1,27 @@
+f
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+3.Compromise: 30.0, 1.7976931348623157e+308
+584.776
+['AccessControl.75.RTU Login.Enabled', 'Service.54.SCADA Service.Patched', 'Service.112.net logon.Patched', 'Keystore.92.Admin Keystore.Encrypted', 'Host.93.AD server.ProperlyConfigured', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'Service.96.AD DC.Patched', 'SoftwareProduct.99.Generic service software (COTS).NoPatchableVulnerability', 'Firewall.19.Firewall.KnownRuleSet', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'UnknownSoftwareProduct.82.UnknownSoftwareProduct.HasVendorSupport', 'SoftwareProduct.99.Generic service software (COTS).NoUnpatchableVulnerability', 'Host.93.AD server.Patched', 'UnknownService.81.unknownService(RTU-Process).Patched']
+2101.649313926697
+iterations: 5
+
+o
+74.Compromise: 91.0, 1.7976931348623157e+308
+59.Compromise: 91.0, 1.7976931348623157e+308
+3.Compromise: 23.0, 1.7976931348623157e+308
+459.781
+['AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Keystore.118.nonAdmin Keystore.Encrypted', 'Host.93.AD server.ProperlyConfigured', 'Firewall.19.Firewall.KnownRuleSet', 'Service.96.AD DC.Patched', 'Host.93.AD server.Patched', 'Service.112.net logon.Patched', 'Service.54.SCADA Service.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability']
+1860.9984729290009
+iterations: 5
+
+fo
+74.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+59.Compromise: 1.7976931348623157e+308, 1.7976931348623157e+308
+3.Compromise: 23.0, 1.7976931348623157e+308
+577.777
+['AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'AccessControl.75.RTU Login.Enabled', 'Keystore.92.Admin Keystore.Encrypted', 'Service.54.SCADA Service.Patched', 'SoftwareProduct.58.Generic service software (COTS).NoPatchableVulnerability', 'Service.96.AD DC.Patched', 'Service.112.net logon.Patched', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'SoftwareProduct.116.Generic service software (COTS).NoPatchableVulnerability', 'Firewall.19.Firewall.KnownRuleSet', 'Host.93.AD server.ProperlyConfigured', 'Host.73.RTU.Hardened', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability', 'SoftwareProduct.99.Generic service software (COTS).NoUnpatchableVulnerability', 'Host.93.AD server.Patched']
+2217.0927734375
+iterations: 5
+
