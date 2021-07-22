@@ -21,7 +21,11 @@ import copy
 import sys
 import time
 
+temp_inf = 1.7976931348623157e+308
 DEBUGGING = True
+DEBUGGING1 = False
+DEBUGGING2 = False
+DEBUGGING_imp = False
 
 class CoAGenerator():
 
@@ -132,10 +136,11 @@ class CoAGenerator():
             self.time_budgets = None
 
 
+
     def generate_coas(self,
                      project_id,
                      model_id,
-                     target_objects_ids,
+                     #target_objects_ids,
                      crit_metrics=['o', 'f'],
                      time_limit=300,
                      efficiency_alpha = 0.25,
@@ -147,16 +152,15 @@ class CoAGenerator():
                      test_for_paper = False):
         '''
         return list of pairs (coa, coa_efficiency)
-
         ugly code, sorry for that, lots of quick fixes for extracting additional info for tests
-
         also, keep_track_of_ttcs should ALWAYS be set to True
         '''
+
         result = []
         for i in range(len(crit_metrics)):
             ithresult = self._generate_coa_wrt_criticallity_score(project_id=project_id,
                                              model_id=model_id,
-                                             target_objects_ids=target_objects_ids,
+                                             #target_objects_ids=target_objects_ids,
                                              crit_metric=crit_metrics[i],
                                              time_limit=time_limit,
                                              efficiency_alpha = efficiency_alpha,
@@ -220,7 +224,7 @@ class CoAGenerator():
     def _generate_coa_wrt_criticallity_score(self,
                                              project_id,
                                              model_id,
-                                             target_objects_ids=(),
+                                             #target_objects_ids=(),
                                              crit_metric='f',
                                              time_limit=300,
                                              efficiency_alpha = 0.25,
@@ -235,19 +239,15 @@ class CoAGenerator():
         # 1. PREPROCESSING
         # 1.1 download and unzip initial model, remember its path, create corresponding Model object
         eom_file_path = self.session.download_and_unzip_model(project_id, model_id)
-        eom_dir_path = eom_file_path[:eom_file_path.rindex('\\')]
+        eom_dir_path = eom_file_path[:eom_file_path.rindex('/')]
 
-        if DEBUGGING:
+        if DEBUGGING_imp:
             print(".eom file extracted from .sCAD to {}".format(eom_file_path))
-
+        print(".eom file extracted.")
         model = Model(eom_file_path)
 
         if DEBUGGING:
             print("Number of objects in the model: {}".format(model.count_objects_in_the_model()))
-
-        # 1.2 specify steps the TTC of which is to be increased. These are 'compromise' steps of target objects.
-        # Need to turn objects' id's into exportedId's.
-        steps_of_interest = ["{}.Compromise".format(model.get_exportedId_from_id(object_id)) for object_id in target_objects_ids]
 
         # 1.3 initialize variables
         coa = CoA()
@@ -257,23 +257,22 @@ class CoAGenerator():
         coa_efficiency = 0
 
         if DEBUGGING:
-            print('variables initialized. will run initial simulation now.')
-
+            print('All the variables initialized, will run initial simulation now.')
+        initial_model_id = self.session.zip_and_upload_model(path_to_dir_with_model_files=eom_dir_path,
+                                                              project_id=project_id)
         # 2. run initial simulations and fetch the results.
-        simid, tid = self.session.run_simulation(project_id=project_id, model_id=model_id, time_limit=time_limit)
+        simid, tid = self.session.run_simulation(project_id=project_id, model_id=initial_model_id, time_limit=time_limit)
 
-        if DEBUGGING:
-            print(tid)
 
-        initial_ttcs = {step_of_interest: self.session.get_ttcs(project_id=project_id,
-                                                                simulation_id=simid,
-                                                                attack_step=step_of_interest,
-                                                                time_limit=time_limit) for step_of_interest in steps_of_interest}
+        initial_ttcs, steps_of_interest, m = self.session.get_ttcs(project_id=project_id, simulation_id=simid,
+                                                                time_limit=time_limit)
+
+        initial_ttcs_json = json.dumps(initial_ttcs)
+        results= '"initialTTC" : {},"results" : [\n '.format(initial_ttcs_json)
+        with open('newTestsResults.txt', 'a') as f:
+            f.write(results)
+
         intermediate_ttcs = copy.deepcopy(initial_ttcs)
-
-        if DEBUGGING:
-            print("initial ttcs:")
-            print(initial_ttcs)
 
         # 3. main loop of the algorithm starts
         while True:
@@ -284,21 +283,37 @@ class CoAGenerator():
 
             # If TTC5 for each of the target objects is infinity, stop.
             current_ttcs_five = set([intermediate_ttcs[x][0] for x in intermediate_ttcs])
-            if current_ttcs_five == {np.inf}:
+            if DEBUGGING1:
+                print("Infinity values are changed to {}".format(temp_inf))
+            if current_ttcs_five == {temp_inf}:
+                if DEBUGGING1:
+                    print ("Value is Infinite")
                 break
 
             # helper variable for recognizing the defense steps added in the current iteration
             defense_steps_in_previous_coa = set(coa.hasse.nodes)
+            if DEBUGGING1:
+                print("defense_steps_in_previous_coa {}".format(defense_steps_in_previous_coa))
 
             # 3.1 fetch attack paths and merge them into a single attack graph
-            attack_paths = [AttackGraph(self.session.get_attack_path_from_simulation(simulation_id=simid,
-                                                                                     attack_step=step_of_interest,
-                                                                                     time_limit=time_limit)) for step_of_interest in steps_of_interest]
+            attack_paths = []
+            for step_of_interest in steps_of_interest:
+                flag = 0
+                for step_1 in intermediate_ttcs:
+                    if step_of_interest == step_1:
+                        if intermediate_ttcs[step_1][0] == temp_inf:
+                            flag = 1
+                        break
+                if flag==0:
+                    attack_paths.append(AttackGraph(self.session.get_attack_path_from_simulation(simulation_id=simid,
+                                                                         attack_step=step_of_interest,
+                                                                         time_limit=time_limit)))
             graph = merge_attack_graphs(attack_paths)
 
             if DEBUGGING:
                 print('NUMBER OF NODES IN THE GRAPH: {}'.format(len(graph.nodes)))
             # clean-up: delete the scenario from securiCAD
+            print("Cleaning scenarios...")
             self.session.delete_scenario_from_project(scenario_id=tid, project_id=project_id)
 
             # 3.2 for every defense step, compute criticallity of the nodes it counters; assign the highest of the values
@@ -316,14 +331,9 @@ class CoAGenerator():
             defenses_sorted = sorted(quality_scores_of_defenses, key=lambda key: (quality_scores_of_defenses[key]), reverse=True)
 
             if DEBUGGING and False:
-                print('---- quality scores for defense steps ----')
+                #---- quality scores for defense steps ----
                 for item in defenses_sorted:
-                    print(item, quality_scores_of_defenses[item])
-            # try:
-            #     sorted = graph.def_nodes_sorted_by_scores(scores=crit_metric)
-            # except:
-            #     print('FAIL')
-            #     sorted = []
+                    print("Candidate Defense step : {} --- Quality Score : {}".format(item, quality_scores_of_defenses[item]))
 
             if DEBUGGING and False:
                 for node in defenses_sorted:
@@ -331,12 +341,11 @@ class CoAGenerator():
                     print(graph.nodes[node]['scores'],
                           '\t',
                           graph.nodes[node]["eid"],
-                          #graph.nodes[node]["name"],
                           graph.nodes[node]["stepname"])
                     print()
 
             # 3.3 iterate over the defense steps. for each, try to add it and all of its prerequisites to the coa.
-            if DEBUGGING:
+            if DEBUGGING1:
                 print('Step 3.3.')
 
             number_of_defense_steps_added = 0
@@ -344,10 +353,11 @@ class CoAGenerator():
             while defenses_sorted != []:
 
                 node = defenses_sorted.pop(0)
-            #for node in sorted:
+                #for node in sorted:
 
-                if DEBUGGING:
+                if DEBUGGING1:
                     print(node)
+
 
                 # for future code optimization: exclusivity and monetary constraints could be checked before a new CoA object is constructed
                 # Create a new candidate CoA by adding the defence and all of its prerequisites to the last CoA.
@@ -357,7 +367,7 @@ class CoAGenerator():
                     new_coa = coa.add_from_dict(overline_pre(self.prerequisites, node))
                 new_coa_nodes_as_set = set(new_coa.hasse.nodes)
 
-                if DEBUGGING:
+                if DEBUGGING1:
                     print(new_coa_nodes_as_set)
 
                 # check exclusivity
@@ -374,11 +384,15 @@ class CoAGenerator():
                 # check costs
                 if self.costs is not None or self.times is not None:
                     costs, times = self._get_formatted_prices_for_computations(new_coa_nodes_as_set)
+                    if DEBUGGING1:
+                        print("--------cost =", costs, "and time =", times)
 
                 # check monetary costs
                 monetary_budgets_satisfied = True
                 if self.monetary_budgets is not None and self.costs is not None:
                     monetary_costs_of_new_coa = new_coa.compute_costs_and_times(costs = costs)
+                    if DEBUGGING1:
+                        print("--------monetary cost =", monetary_costs_of_new_coa)
                     for i in range(self.no_costs):
                         if monetary_costs_of_new_coa[i] > self.monetary_budgets[str(i+1)]:
                             monetary_budgets_satisfied = False
@@ -391,6 +405,8 @@ class CoAGenerator():
                 time_like_budgets_satisfied = True
                 if self.time_budgets is not None and self.times is not None:
                     time_like_costs_of_new_coa = new_coa.compute_costs_and_times(costs=[], times=times)
+                    if DEBUGGING1:
+                        print("----------time cost =", time_like_costs_of_new_coa)
                     for j in range(self.no_times):
                         if time_like_costs_of_new_coa[j] > self.time_budgets[str(j+1)]:
                             time_like_budgets_satisfied = False
@@ -403,6 +419,9 @@ class CoAGenerator():
                 coa = new_coa
                 defense_steps_added = set(coa.hasse.nodes).difference(defense_steps_in_previous_coa)
                 number_of_defense_steps_added += len(defense_steps_added)
+                if DEBUGGING:
+                    print("Number of added defenses = ", number_of_defense_steps_added)
+                # TODO big change CHECK on using only >
                 if number_of_defense_steps_added >= defs_per_iteration:
                     break
 
@@ -421,7 +440,7 @@ class CoAGenerator():
                 # TODO: maybe comment out the part on updating the attack graph, since the defenses in
                 # securiCAD don't block steps completely. Run tests: commented out vs not and see the efficiencies.
 
-                if DEBUGGING:
+                if DEBUGGING1:
                     print('updating graph and recomputing quality of defenses')
                     update_start = time.time()
 
@@ -458,7 +477,7 @@ class CoAGenerator():
 
                 defenses_sorted = sorted(quality_scores_of_defenses, key=lambda key: (quality_scores_of_defenses[key]), reverse=True)
 
-                if DEBUGGING:
+                if DEBUGGING1:
                     update_end = time.time()
                     print('updating graph and recomputing quality took {} seconds'.format(update_end-update_start))
 
@@ -477,7 +496,7 @@ class CoAGenerator():
             for defense_step in defense_steps_added:
 
                 if DEBUGGING:
-                    print('will try to activate the defense {}'.format(defense_step))
+                    print('Will try to activate the defense {}'.format(defense_step))
 
                 model.turn_defense_on(objectExportedID=defense_step.split('.')[1], defenseName=defense_step.split('.')[-1])
 
@@ -489,9 +508,11 @@ class CoAGenerator():
             # 4.2 zip&upload the new model
             # write to .eom file
             model.write_to_file(new_path=eom_file_path)
+            if DEBUGGING:
+                print('File properly written...')
             modified_model_id = self.session.zip_and_upload_model(path_to_dir_with_model_files=eom_dir_path, project_id=project_id)
 
-            if DEBUGGING:
+            if DEBUGGING1:
                 print('Zipped and uploaded.')
 
             if DEBUGGING:
@@ -503,10 +524,12 @@ class CoAGenerator():
             simid, tid = self.session.run_simulation(
                     project_id=project_id, model_id=modified_model_id, time_limit=time_limit)
             # fetch new ttc values
-            intermediate_ttcs = {step_of_interest: self.session.get_ttcs(
-                    project_id=project_id, simulation_id=simid, attack_step=step_of_interest, time_limit=time_limit) for step_of_interest in steps_of_interest}
+            intermediate_ttcs, steps_of_interest, m = self.session.get_ttcs(project_id=project_id, simulation_id=simid,
+                                                                    time_limit=time_limit)
+            # intermediate_ttcs = {step_of_interest: self.session.get_ttcs(
+            #         project_id=project_id, simulation_id=simid, attack_step=step_of_interest, time_limit=time_limit) for step_of_interest in steps_of_interest}
             if DEBUGGING:
-                print('intermediate ttc values: {}'.format(intermediate_ttcs))
+                print('Intermediate ttc values: {}'.format(intermediate_ttcs))
             # compute efficiency score of the coa
             coa_efficiency = efficiency(initial_ttcs, intermediate_ttcs)
             # coa_efficiency = round(sum([efficiency_alpha * (intermediate_ttcs[step_of_interest][0] - initial_ttcs[step_of_interest][0]) +
@@ -524,7 +547,7 @@ class CoAGenerator():
 
 
             if DEBUGGING:
-                print(coa_efficiency)
+                print("CoA Efficiency : {}".format(coa_efficiency))
 
         # :(
         try:
@@ -536,12 +559,36 @@ class CoAGenerator():
         # at this point, the solution generated in the last iteration is 'coa' and its efficiency is 'coa_efficiency'.
         if DEBUGGING:
             print("BACKTRACKING")
-
+            i_iter = 0
             for i in partialSolutions:
                 print(i)
                 print(partialSolutions[i][0].hasse.nodes)
                 print(partialSolutions[i][1])
                 print(15*"=")
+                results = ''
+                if i_iter > 0:
+                    results += ',\n'
+                results += '{{"efficiency" : "{}", '.format(partialSolutions[i][1])
+                intermediate_ttcs_json = json.dumps(partialSolutions[i][2])
+                results += '"coaTTC" : {},\n'.format(intermediate_ttcs_json)
+                results += '"time_cost" : {"1" : ""},'
+                results += '"monetary_cost" : {"1" : ""}, "defenses" : [\n'
+                partial_defenses = set(partialSolutions[i][0].hasse.nodes)
+                j_iter = 0
+                for partial_defense in partial_defenses:
+                    if j_iter > 0:
+                        results += ',\n'
+                    results += '{{"ref" : "{}",\n'.format(partial_defense.split('.')[1])
+                    results += '"defensename" : "{}",\n'.format(partial_defense.split('.')[-1])
+                    results += '"defenseInfo" : "Info",\n'
+                    results += '"mitreRef" : "Ref"}'
+                    j_iter = j_iter + 1
+                results += ']}\n'
+                i_iter = i_iter + 1
+                with open('newTestsResults.txt', 'a') as f:
+                    f.write(results)
+
+
 
         if iteration == 2 or coa_efficiency == 0:
             if keep_track_of_ttcs:
@@ -552,7 +599,6 @@ class CoAGenerator():
             relative_improvement = abs((coa_efficiency - partialSolutions[i][1])/coa_efficiency)
             if relative_improvement < efficiency_improvement_threshold:
                 if keep_track_of_ttcs:
-                    #print((partialSolutions[i], initial_ttcs))
                     return (partialSolutions[i], initial_ttcs, iteration-1)
                 else:
                     return partialSolutions[i]
@@ -714,8 +760,8 @@ def efficiency(initial, final):
         initial50 = max(initial[x][1], 0.001)
         final5 = max(final[x][0], 0.001)
         final50 = max(final[x][1], 0.001)
-        if initial[x][0] != np.inf:
-            if initial[x][1] == np.inf:
+        if initial[x][0] != temp_inf:
+            if initial[x][1] == temp_inf:
                 # ttc5_i is finite, ttc50_i is not
                 result += np.power(1.05, -initial5) * min(final5-initial5, c)
             else:
