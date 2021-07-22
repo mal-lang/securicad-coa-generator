@@ -15,6 +15,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
+DEBUGGING = False
 
 class AttackGraph(nx.DiGraph):
 
@@ -91,6 +92,7 @@ class AttackGraph(nx.DiGraph):
                 self.nodes[gnode]["eid"] = node["eid"]
                 self.nodes[gnode]["class"] = node["class"]
                 self.nodes[gnode]["ttc"] = node["ttc"]
+                #print("Nodes : ", self.nodes[gnode])
 
 
     # def set_criticallity_scores(self, scores="fod"):
@@ -142,7 +144,7 @@ class AttackGraph(nx.DiGraph):
                     for child in self.successors(node):
                         if child not in counterable_attack_steps:
                             counterable_attack_steps.append(child)
-        else:
+        else:  # include all the steps except defenses irrespective of the attack step has corresponding defense or not
             counterable_attack_steps = [node for node in self.nodes if not self.nodes[node]["isDefense"]]
 
         if metrics == 'f':
