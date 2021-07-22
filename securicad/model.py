@@ -14,6 +14,8 @@
 
 import xml.etree.ElementTree as ET
 
+DEBUGGING = False
+coreLang_specific_CHANGE = False
 
 class Model:
     '''
@@ -27,7 +29,7 @@ class Model:
             with open(path, 'rt') as f:
                 self.tree = ET.parse(f)
                 self.root = self.tree.getroot()
-                self.name = path.split('\\')[-1] # file name
+                self.name = path.split('/')[-1] # file name
                 self.path = path
         except:
             print('Failed to initialize Model object using the following path: {}'.format(path))
@@ -64,8 +66,9 @@ class Model:
         # the "defenseDefaultValueConfigurations" parts are listed for some of the assets.
         # e.g., for SoftwareProduct, but not for UnknownSoftwareProduct. assuming that they
         # are the same, in the case of 'unknowns', we refer to the specification of 'knowns'.
-        if len(metaConcept) > 7 and metaConcept[:7] == 'Unknown':
-            metaConcept = metaConcept[7:]
+        if coreLang_specific_CHANGE:
+            if len(metaConcept) > 7 and metaConcept[:7] == 'Unknown':
+                metaConcept = metaConcept[7:]
 
         for node in self.root.iter("defenseDefaultValueConfigurations"):
             if node.attrib["metaConcept"] == metaConcept:
@@ -133,16 +136,18 @@ class Model:
         output += b"</com.foreseeti.kernalCAD:XMIObjectModel>\n"
         if new_path is None:
             newFileName = "updated_{}".format(self.name)
-            nameStartsHere = self.path.rindex('\\')
+            nameStartsHere = self.path.rindex('/')
             new_path = self.path[:nameStartsHere+1] + newFileName
         with open(new_path, 'wb') as f:
             f.write(output)
+        if DEBUGGING:
+            print("-:--:--:-- going out MODEL:write_to_file")
         return new_path
 
 
-    def get_exportedId_from_id(self, id=""):
+    def get_exportedId_from_id(self, id):
         for object in self.root.iter("objects"):
-            if object.attrib['id'] == id:
+            if object.attrib['id'] == "".format(id):
                 return object.attrib['exportedId']
         return
 
