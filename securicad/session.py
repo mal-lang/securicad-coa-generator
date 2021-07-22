@@ -20,6 +20,8 @@ import zipfile
 import shutil
 import os
 
+DEBUGGING = False
+DEBUGGING_imp = False
 
 class Session:
     '''
@@ -50,7 +52,8 @@ class Session:
 
         status_code, self.jwt_token = self._login()
         if status_code == 200:
-            print("Connection established to {} by the user {}.".format(ip_address, self.user.name))
+            #print("Connection established to {} by the user {}.".format(ip_address, self.user.name))
+            print("....")
         else:
             print("Failed to initiate session.")
             return
@@ -102,7 +105,7 @@ class Session:
         tic = time.time()
         time_passed = -1
         while time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.post(
                 self.base_url + self.path_project_scenarios,
                 headers={'Content-Type': 'application/json', 'Content-Length': '0',
@@ -123,7 +126,7 @@ class Session:
         tic = time.time()
         time_passed = -1
         while time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.post(
                 self.base_url + self.path_project_models,
                 headers={'Content-Type': 'application/json', 'Content-Length': '0',
@@ -134,8 +137,10 @@ class Session:
             #print(response.status_code)
             if response.status_code == 200:
                 resp = response.json()
-                mids = [item['mid'] for item in resp['response']]
-                return mids
+                for item in resp['response']:
+                    print("model {}({})".format(item['name'], item['mid']))
+                #mids_name = {model_dict(item['name']) =  for item in resp['response']}
+                return #mids_name
             time_passed = time.time() - tic
         return
 
@@ -150,8 +155,9 @@ class Session:
             verify=self.check_cert
         )
         if response.status_code == 200:
-            print('Deleted model having mid = {} from the project having pid = {}.'.format(
-                model_id, project_id))
+            if DEBUGGING_imp:
+                print('Deleted model having mid = {} from the project having pid = {}.'.format(model_id, project_id))
+            print("Deleted modified model from the project")
         else:
             print('Failed to delete the model.')
         return
@@ -167,11 +173,12 @@ class Session:
             verify=self.check_cert
         )
         if response.status_code == 200:
-            print('Deleted scenario having id = {} from the project having pid = {}.'.format(
-                scenario_id, project_id))
+            #print('Deleted scenario having id = {} from the project having pid = {}.'.format(scenario_id, project_id))
+            print("...")
         else:
             print('Failed to delete the scenario.')
-            print(response)
+            if DEBUGGING_imp:
+                print(response)
         return
 
 
@@ -236,7 +243,9 @@ class Session:
                 info = "Saved to {}.".format(actual_out_path)
             with open(actual_out_path, 'wb') as f:
                 f.write(contents)
-            print(info)
+            if DEBUGGING_imp:
+                print(info)
+            print(".sCAD file saved.")
             return actual_out_path
         else:
             print("Failed to download the model.")
@@ -251,8 +260,8 @@ class Session:
         '''
         with open(model_file_path, 'rb') as f:
             file = base64.b64encode(f.read()).decode()
-        if '\\' in model_file_path:
-            file_name = model_file_path[model_file_path.rindex('\\'):]
+        if '/' in model_file_path:
+            file_name = model_file_path[model_file_path.rindex('/'):]
         else:
             file_name = model_file_path
         data = '{"pid":"' + project_id + \
@@ -262,7 +271,7 @@ class Session:
         start = time.time()
         time_passed = -1
         while status_code != 200 and time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.put(
                 self.base_url + self.path_project_models,
                 headers={
@@ -274,8 +283,9 @@ class Session:
             status_code = response.status_code
         if status_code == 200:
             mid = response.json()['response'][0]["mid"]
-            print('Uploaded model {} to the project having pid = {}. The model id is {}.'.format(
-                model_file_path, project_id, mid))
+            if DEBUGGING_imp:
+                print('Uploaded model {} to the project having pid = {}. The model id is {}.'.format(model_file_path, project_id, mid))
+            print("Model uploaded.")
             return mid
         else:
             print('Failed to upload a model. Response: {}.'.format(response.status_code))
@@ -298,7 +308,7 @@ class Session:
         start = time.time()
         time_passed = -1
         while time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.put(
                 self.base_url + self.path_project_scenario,
                 headers={
@@ -329,7 +339,7 @@ class Session:
         start = time.time()
         time_passed = -1
         while status_code != 200 and time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.post(
                 self.base_url + self.path_simulation_results,
                 data='{"pid":"' + project_id + '", "simid": "' + simulation_id + '"}',
@@ -348,7 +358,7 @@ class Session:
             return
 
 
-    def get_attack_path_from_simulation(self, simulation_id, attack_step="3.Compromise", time_limit=30):
+    def get_attack_path_from_simulation(self, simulation_id, attack_step, time_limit=30):
         '''
         Fetches attack paths created by simulation having specified id.
         If successful, returns json object containing the paths.
@@ -358,7 +368,7 @@ class Session:
         start = time.time()
         time_passed = -1
         while status_code != 200 and time_passed < time_limit:
-            time.sleep(5)
+            #time.sleep(5)
             response = requests.post(
                 self.base_url + self.path_simulation_attack_path,
                 data='{"simid": "' + simulation_id + '", "attackstep": "' + attack_step + '"}',
@@ -370,19 +380,38 @@ class Session:
             time_passed = time.time() - start
 
         if status_code == 200:
-            print("Attack paths fetched successfully.")
+            print("Attack paths fetched successfully for attack step {}.".format(attack_step))
             return response.json()
         else:
-            print("Failed to fetch attack paths.")
+            print("Failed to fetch attack paths for attack step {}.".format(attack_step))
             return
 
 
-    def get_ttcs(self, project_id, simulation_id, attack_step, time_limit=30):
+    def get_ttcs(self, project_id, simulation_id, time_limit=30):
         simres = self.get_simulation_results(project_id, simulation_id, time_limit=time_limit)
-        for risk in simres["response"]["results"]["risks"]:
-            if risk["attackstep_id"] == attack_step:
-                return [round(float(risk["ttc5"]), 3), round(float(risk["ttc50"]), 3), round(float(risk["ttc95"]), 3)]
-
+        with open("Simulation_Result.json", "w") as outfile:
+            json.dump(simres, outfile)
+        ttcs = {}
+        # print("Point 1 {}".format(simres["response"]["threat_summary"]))
+        # for threat in simres["response"]["threat_summary"]:
+        #     print("hva_list {}".format(threat["hva_list"]))
+        #     hva_list = threat["hva_list"]
+        # print("Point 2")
+        # for risk in simres["response"]["results"]["risks"]:
+        #     if "{}.{}".format(risk["object_id"],risk["attackstep_id"]) in hva_list:
+        #         ttcs[risk["attackstep_id"]]= [round(float(risk["ttc5"]), 3), round(float(risk["ttc50"]), 3), round(float(risk["ttc95"]), 3)]
+        # print("Point 3")
+        # return ttcs, hva_list
+        for risks_i in simres["response"]["results"]["risks"]:
+            if DEBUGGING:
+                print("TTCS for {} are {} {} {}".format(risks_i["attackstep_id"], round(float(risks_i["ttc5"]), 3),
+                                                    round(float(risks_i["ttc50"]), 3),
+                                                    round(float(risks_i["ttc95"]), 3)))
+            ttcs[risks_i["attackstep_id"]] = [round(float(risks_i["ttc5"]), 3), round(float(risks_i["ttc50"]), 3), round(float(risks_i["ttc95"]), 3)]
+        steps_of_interest = ["{}".format(risks_i["attackstep_id"]) for risks_i in simres["response"]["results"]["risks"]]
+        mid = simres["response"]["model_data"]["mid"]
+        return ttcs, steps_of_interest, mid
+        #"response" "threat_summary" "hva_list"
 
     def download_and_unzip_model(self, project_id, model_id, outpath=None, feedback = False):
         '''
@@ -394,13 +423,13 @@ class Session:
         '''
         model_as_scad_path = self.download_model_as_scad(model_id=model_id, project_id=project_id, outpath=outpath)
         # the above ends with "_down.sCAD"
-        scad_model_dir_path = model_as_scad_path[:model_as_scad_path.rindex('\\')]
-        scad_model_file_name = model_as_scad_path[model_as_scad_path.rindex('\\')+1:model_as_scad_path.rindex('_')]
+        scad_model_dir_path = model_as_scad_path[:model_as_scad_path.rindex('/')]
+        scad_model_file_name = model_as_scad_path[model_as_scad_path.rindex('/')+1:model_as_scad_path.rindex('_')]
         extraction_dir_name = "coa{}".format(time.time()).replace('.', '_')
-        extraction_dir_full_path = "{}\\{}".format(scad_model_dir_path, extraction_dir_name)
+        extraction_dir_full_path = "{}/{}".format(scad_model_dir_path, extraction_dir_name)
         with zipfile.ZipFile(model_as_scad_path, 'r') as zip_ref:
             zip_ref.extractall(extraction_dir_full_path)
-        eom_path = "{}\{}.eom".format(extraction_dir_full_path, scad_model_file_name)
+        eom_path = "{}/{}.eom".format(extraction_dir_full_path, scad_model_file_name)
 
         if feedback:
             print("//path to the .eom file: {}".format(eom_path))
@@ -418,11 +447,11 @@ class Session:
         Constructs .zip archive containing the files in the directory one level higher than the directory containing
         the files, renames it to .sCAD, uploads and removes.
         '''
-        dir_one_level_higher_than_model_files = path_to_dir_with_model_files[:path_to_dir_with_model_files.rindex('\\')]
-        shutil.make_archive(base_name='{}\\tempTemp'.format(dir_one_level_higher_than_model_files), format='zip',
+        dir_one_level_higher_than_model_files = path_to_dir_with_model_files[:path_to_dir_with_model_files.rindex('/')]
+        shutil.make_archive(base_name='{}/tempTemp'.format(dir_one_level_higher_than_model_files), format='zip',
                             root_dir=path_to_dir_with_model_files)
-        zipped_model_file_path = '{}\\tempTemp.zip'.format(dir_one_level_higher_than_model_files)
-        sCAD_model_file_path = '{}\\tempTemp.sCAD'.format(dir_one_level_higher_than_model_files)
+        zipped_model_file_path = '{}/tempTemp.zip'.format(dir_one_level_higher_than_model_files)
+        sCAD_model_file_path = '{}/tempTemp.sCAD'.format(dir_one_level_higher_than_model_files)
         os.rename(zipped_model_file_path, sCAD_model_file_path)
         uploaded_model_id = self.upload_model_to_project(model_file_path=sCAD_model_file_path,
                                                                  project_id=project_id)
