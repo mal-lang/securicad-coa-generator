@@ -1,4 +1,0 @@
-{
-  "AccessControl.75.RTU Login.NoDefaultPasswords": ["AccessControl.75.RTU Login.PasswordPolicyEnforcement"],
-  "AccessControl.75.RTU Login.PasswordPolicyEnforcement": ["AccessControl.75.RTU Login.Enabled"]
-}
