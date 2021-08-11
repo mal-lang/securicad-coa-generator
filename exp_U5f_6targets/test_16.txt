@@ -1,9 +1,0 @@
-1475.53493475914
-1126.521
-74.Compromise: 73.0, 1.7976931348623157e+308
-59.Compromise: 73.0, 1.7976931348623157e+308
-3.Compromise: 14.0, 1.7976931348623157e+308
-20.Compromise: 32.0, 1.7976931348623157e+308
-29.Compromise: 23.0, 1.7976931348623157e+308
-27.Compromise: 32.0, 1.7976931348623157e+308
-['Firewall.19.Firewall.Enabled', 'AccessControl.104.AD SSO Admin.Enabled', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'AccessControl.94.Windows Server login.Enabled', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Service.96.AD DC.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'Service.112.net logon.Patched', 'Service.54.SCADA Service.Patched', 'Keystore.118.nonAdmin Keystore.Encrypted', 'Host.93.AD server.ProperlyConfigured', 'Host.20.Windows 7 workstation.ProperlyConfigured', 'AccessControl.117.AD SSO nonAdmin.PasswordPolicyEnforcement', 'Client.27.VPN Client.Patched', 'SoftwareProduct.116.Generic service software (COTS).NoUnpatchableVulnerability']
