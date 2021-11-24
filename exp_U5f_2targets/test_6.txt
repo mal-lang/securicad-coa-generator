@@ -1,5 +1,0 @@
-1429.7094521522522
-426.977
-74.Compromise: 89.0, 1.7976931348623157e+308
-59.Compromise: 38.0, 1.7976931348623157e+308
-['AccessControl.104.AD SSO Admin.Enabled', 'Firewall.19.Firewall.Enabled', 'Keystore.92.Admin Keystore.Encrypted', 'Service.54.SCADA Service.Patched', 'AccessControl.117.AD SSO nonAdmin.Enabled', 'AccessControl.75.RTU Login.Enabled', 'AccessControl.117.AD SSO nonAdmin.NoDefaultPasswords', 'Service.74.RTU Control.Patched', 'Host.73.RTU.Hardened', 'SoftwareProduct.58.Generic service software (COTS).NoUnpatchableVulnerability', 'AccessControl.94.Windows Server login.Enabled', 'Service.96.AD DC.Patched', 'Service.112.net logon.Patched', 'Firewall.19.Firewall.KnownRuleSet', 'AccessControl.75.RTU Login.PasswordPolicyEnforcement']
