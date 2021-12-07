@@ -9,9 +9,22 @@ import xml.etree.ElementTree as ET
 import json
 import numpy as np
 from attackg import AttackGraph, merge_attack_graphs
+from securicad.enterprise.tunings import Tunings
 import sys
 import warnings
 import time
+
+temp_inf = 1.7976931348623157e+308
+p_test = False
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+# suppressing HTTPS insecure connection warnings
+suppress = True
+if suppress and not sys.warnoptions:
+    warnings.simplefilter("ignore")
 
 def read_json_file(filename):
     if os.path.isfile(filename):
@@ -30,17 +43,7 @@ DEBUGGING1=True
 JSON_FILENAME = "results.json"
 final_result = {}
 
-temp_inf = 1.7976931348623157e+308
-p_test = False
 
-from flask import Flask, request
-
-app = Flask(__name__)
-
-# suppressing HTTPS insecure connection warnings
-suppress = True
-if suppress and not sys.warnoptions:
-    warnings.simplefilter("ignore")
 
 ################# your input required
 
@@ -79,7 +82,8 @@ def efficiency(initial, final):
                     final50 - initial50, c)
     return round(result, 3)
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
+def connect():
     if os.path.isfile(JSON_FILENAME):
         os.remove(JSON_FILENAME)
     config = configparser.ConfigParser()
@@ -156,9 +160,9 @@ if __name__ == "__main__":
     #modelinfo = models.get_model_by_mid(project, "235847446704635") # imc
     #modelinfo = models.get_model_by_mid(project, "244665522116755")  # examplemodel
     # modelinfo = models.get_model_by_mid(project, "164553780505755")  # simplemodel
-    #modelinfo = models.get_model_by_mid(project, "245703741252888")  # cost_Model_3v03
+    modelinfo = models.get_model_by_mid(project, "245703741252888")  # cost_Model_3v03
     #modelinfo = models.get_model_by_mid(project, "289357738759438")  # honor_model
-    modelinfo = models.get_model_by_mid(project, "194076259054245")  # demoHonor
+    #modelinfo = models.get_model_by_mid(project, "194076259054245")  # demoHonor
     # TODO get the model from simulation id
 
     print("model name  -- ", modelinfo.name)
@@ -316,7 +320,7 @@ if __name__ == "__main__":
             attack_paths.append(ag)
 
         if len(attack_paths) == 0:
-            exit()
+            return
 
         # code for debugging
 
@@ -360,31 +364,38 @@ if __name__ == "__main__":
 
 
 
-# @app.route('/', methods=["POST"])
-# def hello():
-#     if request.is_json:
-#         request_data = request.get_json()
-#         print("JSON Simulation ID : {}".format(request_data['simulationId']))
-#     else:
-#         req = request.data
-#         print("request.data : {}".format(request.data))
-#         request_data = json.loads(req.decode('ascii'))
-#         print("Non JSON Simulation ID : {}".format(request_data['simulationId']))
-# 
-#     # results = '{'
-#     # with open('newTestsResults.txt', 'w') as f:
-#     #     f.write(results)
-# 
-#     #connect(1)
-# 
-#     # results =  ']}'
-#     # with open('newTestsResults.txt', 'a') as f:
-#     #     f.write(results)
-# 
-#     with open("newTestsResults.txt", "rb") as fin:
-#         content = json.load(fin)
-#     with open("stringJson.txt", "w") as fout:
-#         json.dump(content, fout, indent=1)
-#         R = json.dumps(content)
-# 
-#     return R
+@app.route('/', methods=["POST"])
+def hello():
+    if request.is_json:
+        request_data = request.get_json()
+        print("JSON Simulation ID : {}".format(request_data['simulationId']))
+    else:
+        req = request.data
+        print("request.data : {}".format(request.data))
+        request_data = json.loads(req.decode('ascii'))
+        print("Non JSON Simulation ID : {}".format(request_data['simulationId']))
+
+    #r = '{'
+    #with open('results.json', 'w') as f:
+        #f.write(r)
+
+    connect()
+
+    #r =  ']}'
+    #with open('results.json', 'a') as f:
+    #    f.write(r)
+    print("hello")
+    content = read_json_file(JSON_FILENAME)
+
+    R = json.dumps(content)
+    print(R)
+    #with open("results.json", "r") as fin:
+    #    content = json.load(fin)
+    #with open("stringResults.json", "w") as fout:
+    #    json.dump(content, fout, indent=1)
+     #   R = json.dumps(content)
+
+
+    # convert into JSON:
+    #y = json.dumps(x)
+    return R

@@ -1,8 +1,11 @@
 import json
 import os
-
 import networkx as nx
+from random import randint
+from random import seed
 
+
+seed(1)
 p_test = True
 JSON_FILENAME = "results.json"
 
@@ -268,9 +271,15 @@ class AttackGraph(nx.DiGraph):
                                                 data["CoAs"].append({})
                                                 data["CoAs"][-1]["monetary_cost"] = {"1": int(this_cost_mc)}
 
+
                                                 data["CoAs"][-1]["defenses"] = []
-                                                data["CoAs"][-1]["defenses"].append({"defensename": key[:-3]})
-                                                 
+                                                if len(data["CoAs"]) > 1:
+                                                    data["CoAs"][-1]["defenses"] = data["CoAs"][-2]["defenses"].copy()
+                                                    data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
+                                                else:
+                                                    data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
+
+
                                                 # if len(data["CoAs"][coa_index]["monetary_cost"].keys()) > 0:
                                                 #     print("THE MONETARY COST DICTIONARY HAS ALREADY A KEY")
                                                 #     max_key = max([int(x) for x in data["CoAs"][coa_index]["monetary_cost"].keys()])
@@ -344,8 +353,15 @@ class AttackGraph(nx.DiGraph):
                                     data["CoAs"].append({})
                                     data["CoAs"][-1]["monetary_cost"] = {"1": int(current_mc)}
 
+
+
                                     data["CoAs"][-1]["defenses"] = []
-                                    data["CoAs"][-1]["defenses"].append({"defensename":  def_name})
+                                    if len(data["CoAs"]) > 1:
+                                        data["CoAs"][-1]["defenses"] = data["CoAs"][-2]["defenses"].copy()
+                                        data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename": def_name, "defenseInfo": def_name + " is used" })
+                                    else:
+                                        data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename": def_name, "defenseInfo": def_name + " is used" })
+
                                     # if len(data["CoAs"][coa_index]["monetary_cost"].keys()) > 0:
                                     #     print("THE MONETARY COST DICTIONARY HAS ALREADY A KEY")
                                     #     max_key = max([int(x) for x in data["CoAs"][coa_index]["monetary_cost"].keys()])
