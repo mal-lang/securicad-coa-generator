@@ -1,0 +1,10 @@
+1. pip install flask
+2. set FLASK_APP=app.py
+3. python -m flask run
+
+Please dockerize CoA Generator component.
+The configuration needed is:
+set FLASK_APP=app.py
+Necessary packages will install when eecute it.
+For securicad following version will be used
+pip install securicad-enterprise == 0.3.2

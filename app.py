@@ -155,12 +155,12 @@ def connect():
     models = enterprise.models.Models(client)
     #modelinfo = models.get_model_by_mid(project, "238548676164277")  ################# old
     #modelinfo = models.get_model_by_mid(project, "226155404398940")  #################
-    #modelinfo = models.get_model_by_mid(project, "420963146438357") # cost_Model_3
+    modelinfo = models.get_model_by_mid(project, "948412653373189") # cost_Model_3
     #modelinfo = models.get_model_by_mid(project, "114362693739575") # type-7
     #modelinfo = models.get_model_by_mid(project, "235847446704635") # imc
     #modelinfo = models.get_model_by_mid(project, "244665522116755")  # examplemodel
     # modelinfo = models.get_model_by_mid(project, "164553780505755")  # simplemodel
-    modelinfo = models.get_model_by_mid(project, "245703741252888")  # cost_Model_3v03
+    #modelinfo = models.get_model_by_mid(project, "245703741252888")  # cost_Model_3v03
     #modelinfo = models.get_model_by_mid(project, "289357738759438")  # honor_model
     #modelinfo = models.get_model_by_mid(project, "194076259054245")  # demoHonor
     # TODO get the model from simulation id
@@ -231,8 +231,7 @@ def connect():
     raw_tunings = []
 
     count = 0
-    initial={}
-    intermediate={}
+    previous = {}
     data = read_json_file(JSON_FILENAME)
     if "CoAs" not in data.keys():
         data["CoAs"] = []
@@ -257,11 +256,11 @@ def connect():
         with open("Simulation_Result.json", "w") as outfile:
             json.dump(simres, outfile, indent=4)
         ttcs = {}
-        #ttcx = {}
+        ttcx = {}
         for risks_i in simres["results"]["risks"]:
             #print(risks_i)
             ttcs[risks_i["attackstep_id"]] = [round(float(risks_i["ttc5"]), 3), round(float(risks_i["ttc50"]), 3), round(float(risks_i["ttc95"]), 3)]
-            #ttcx[risks_i["attackstep_id"]] = [round(float(risks_i["ttc5"]), 3), round(float(risks_i["ttc50"]), 3)]
+            ttcx[risks_i["attackstep_id"]] = [round(float(risks_i["ttc5"]), 3), round(float(risks_i["ttc50"]), 3)]
             #print(risks_i["ttc5"], risks_i["ttc50"], risks_i["ttc95"])
 
 
@@ -292,12 +291,15 @@ def connect():
         steps_of_interest = ["{}".format(risks_i["attackstep_id"]) for risks_i in simres["results"]["risks"]]
         print("Steps of interest are: ", steps_of_interest)
 
-        '''if main_i==0:
-            initial=ttcx
+        if main_i==0:
+            previous=ttcx
         else:
-            intemediate=ttcx
-            eff=efficiency(initial, intermediate)'''
-        #print(risks_i)
+            eff=efficiency(previous, ttcx)
+            previous = ttcx
+            print("EFFICIENCY: ")
+            print(eff)
+            data["CoAs"][coa_index]["efficiency"] = str(eff)
+            write_json_file(JSON_FILENAME, data)
 
         # get all critical paths
         # cri_path = simulation.get_critical_paths(None)

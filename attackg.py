@@ -275,9 +275,9 @@ class AttackGraph(nx.DiGraph):
                                                 data["CoAs"][-1]["defenses"] = []
                                                 if len(data["CoAs"]) > 1:
                                                     data["CoAs"][-1]["defenses"] = data["CoAs"][-2]["defenses"].copy()
-                                                    data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
+                                                    data["CoAs"][-1]["defenses"].append({"ref": str(randint(1, 100)), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
                                                 else:
-                                                    data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
+                                                    data["CoAs"][-1]["defenses"].append({"ref": str(randint(1, 100)), "defensename":  key[:-3], "defenseInfo":  key[:-3] + " is used"})
 
 
                                                 # if len(data["CoAs"][coa_index]["monetary_cost"].keys()) > 0:
@@ -358,9 +358,9 @@ class AttackGraph(nx.DiGraph):
                                     data["CoAs"][-1]["defenses"] = []
                                     if len(data["CoAs"]) > 1:
                                         data["CoAs"][-1]["defenses"] = data["CoAs"][-2]["defenses"].copy()
-                                        data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename": def_name, "defenseInfo": def_name + " is used" })
+                                        data["CoAs"][-1]["defenses"].append({"ref": str(randint(1, 100)), "defensename": def_name, "defenseInfo": def_name + " is used" })
                                     else:
-                                        data["CoAs"][-1]["defenses"].append({"ref": randint(1, 100), "defensename": def_name, "defenseInfo": def_name + " is used" })
+                                        data["CoAs"][-1]["defenses"].append({"ref": str(randint(1, 100)), "defensename": def_name, "defenseInfo": def_name + " is used" })
 
                                     # if len(data["CoAs"][coa_index]["monetary_cost"].keys()) > 0:
                                     #     print("THE MONETARY COST DICTIONARY HAS ALREADY A KEY")
