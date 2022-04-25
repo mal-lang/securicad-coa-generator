@@ -44,8 +44,8 @@ The functionality provided by the CoA to the SOCCRATES platform is utilized via 
 
 * Copyright © 2020-2021 [Mathias Ekstedt](mailto:mekstedt@kth.se)
 * Copyright © 2020-2021 [Wojciech Wideł](mailto:widel@kth.se)
-* Copyright © 2021 [Preetam Mukherjee](mailto:preetam@kth.se)
-* Copyright © 2021 [Ashish Kumar Dwivedi](mailto:dwvedi@kth.se)
-* Copyright © 2021 [Giuseppe Nebbione](mailto:nebbione@kth.se)
+* Copyright © 2020-2021 [Preetam Mukherjee](mailto:preetam@kth.se)
+* Copyright © 2021-2022 [Ashish Kumar Dwivedi](mailto:dwvedi@kth.se)
+* Copyright © 2021-2022 [Giuseppe Nebbione](mailto:nebbione@kth.se)
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
