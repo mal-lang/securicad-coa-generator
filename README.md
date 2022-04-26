@@ -49,3 +49,4 @@ The functionality provided by the CoA to the SOCCRATES platform is utilized via 
 * Copyright © 2021-2022 [Giuseppe Nebbione](mailto:nebbione@kth.se)
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
