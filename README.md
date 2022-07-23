@@ -4,9 +4,15 @@ The Course of Action (CoA) generator consists of a set of python scripts that op
  
 Available on: https://github.com/mal-lang/securicad-coa-generator
 
-The CoA generator forms a feedback loop with the ADG analyser. To drive the optimi-zation process, the generator computes a partial response to the threat based on the input attack path, run the ADG analyser to obtain the expected behaviour of the attacker under this partial re-sponse, repeat the procedure on the newly obtained attack path, etc. These iterations thus happen inside the CoA generator component without the involvement of the central orchestrator (OIE). High Level Architecture of CoA Generator is shown as follwos. CoA Cortex Analyser is written to integrate CoA generator to the OIE of SOCCRATES. Simulation id of an ADG analysis is required by CoA generator to start its computation, there are a few optional request parameters (costs, budgets, and inherent design restrictions).
+The CoA generator forms a feedback loop with the ADG analyser. To drive the optimi-zation process, the generator computes a partial response to the threat based on the input attack path, run the ADG analyser to obtain the expected behaviour of the attacker under this partial re-sponse, repeat the procedure on the newly obtained attack path, etc. These iterations thus happen inside the CoA generator component without the involvement of the central orchestrator (OIE). High Level Architecture of CoA Generator is shown as follwos. 
 
 <img src="https://user-images.githubusercontent.com/86651387/165049617-3f2d6438-2a81-422f-a1a6-6d79980221e8.png" width="600" height="300">
+
+## CoA Cortex Analyser
+
+For the integration between OIE and CoA Generator the CoA Cortex Analyser has been developed by KTH. It enables the OIE to request the CoAs Generator to produce a list of securiCAD defenses to be applied. Simulation id of an ADG analysis is required by CoA generator to start its computation, there are a few optional request parameters (costs, budgets, and inherent design restrictions).
+
+Available on: https://github.com/mal-lang/securicad-coa-generator/tree/master/SOCCRATES_COA_GENERATOR_Cortex_Analyzer
 
 ## CoA Deployment 
 
